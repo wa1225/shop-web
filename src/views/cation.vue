@@ -20,9 +20,11 @@
       </div>
       <div class="right">
         <van-grid :border="false" :column-num="3">
-          <van-grid-item v-for="item in send" :key="item.id" :to="'/list?id='+item.id">
+          <van-grid-item v-for="item in send" :key="item.id" >
+          <router-link :to="{path:'/list',query:{id:item.id}}">
             <van-image class="imgUrl" :src="item.img" />
             <p>{{item.catename}}</p>
+          </router-link>
           </van-grid-item>
         </van-grid>
       </div>
@@ -43,7 +45,7 @@ export default {
     return {
       cart: [],
       activeKey: 0,
-      send: []
+      send: [],
     };
   },
   mounted() {
@@ -60,8 +62,8 @@ export default {
       this.cart = await getTree({});
       this.send = this.cart[this.activeKey].children;
       console.log(this.cart);
-    }
-  }
+    },
+  },
 };
 </script>
 <style src='../assets/css/ation.css' scoped>

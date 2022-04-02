@@ -1,10 +1,15 @@
+<!-- 订单页面 -->
 <template>
   <div>
+    <van-nav-bar
+      title="确认订单"
+      left-arrow
+      @click-left="$router.push('/shop')"
+    />
     <div class="top-nav">
-      <div class="in-top">
-        <span>代用名 &nbsp;188 **** 8888</span>
-        <br />
-        <span>北京 北京市 昌平区 朱辛庄中公教育实训基地IT教学楼 2号楼 2202室</span>
+      <div class="in-top" @click="jump">
+        <span v-if="this.list.length == 0">请选择您的收货地址</span>
+        <van-address-list :list="list" />
       </div>
     </div>
 
@@ -23,48 +28,28 @@
           </span>
         </div>
       </div>
-      <div class="goods-one">
-        <a href="#">
-          <img src="../assets/images/commodity/02.png" alt />
-          <div class="bbox">
-            <span>溪牧原山茶花洁面泡沫 氨基酸洗面奶150ML 浸透舒缓</span>
+      <div v-for="(item, index) in cartlist" :key="index">
+        <div class="goods-one">
+          <a href="#">
+            <img :src="item.img" alt />
+            <div class="bbox">
+              <span>{{item.goodsname}}</span>
 
-            <div class="pic clearfix">
-              <span>¥</span>
-              <span>999</span>
-              <div class="fr">
-                <i class="iconfont icon-chenghao"></i>
-                <span class="span-1">1</span>
+              <div class="pic clearfix">
+                <span>¥</span>
+                <span>{{ item.price }}</span>
+                <div class="fr">
+                  <i class="iconfont icon-chenghao"></i>
+                  <span class="span-1">{{ item.num }}</span>
+                </div>
+              </div>
+              <div>
+                <div class="div3">7天无理由退货</div>
+                <div class="div4">特价</div>
               </div>
             </div>
-            <div>
-              <div class="div3">7天无理由退货</div>
-              <div class="div4">特价</div>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="goods-one">
-        <a href>
-          <img src="../assets/images/commodity/01.png" alt />
-          <div class="bbox">
-            <span>水肌美男士清爽控油洗面奶100g</span>
-
-            <div class="pic clearfix">
-              <span>¥</span>
-              <span>999</span>
-              <div class="fr">
-                <i class="iconfont icon-chenghao"></i>
-                <span class="span-1">1</span>
-              </div>
-            </div>
-            <div>
-              <div class="div3">7天无理由退货</div>
-              <div class="div4">特价</div>
-            </div>
-          </div>
-        </a>
+          </a>
+        </div>
       </div>
 
       <div class="div-aa">
@@ -90,11 +75,11 @@
       <div class="div-aa">
         <span>商品金额</span>
 
-        <span>¥1998</span>
+        <span>¥{{ this.totalPrice }}</span>
       </div>
       <div class="div-aa div-ab">
         <span>优惠活动</span>
-        <span>-¥200</span>
+        <span>-¥0</span>
       </div>
       <div class="div-aa">
         <span>优惠券</span>
@@ -115,18 +100,82 @@
         <span>已免运费</span>
       </div>
       <div class="div-c">
-        <span>¥1998</span>
-        <span>已优惠¥200元</span>
+        <span>¥{{ this.totalPrice }}</span>
+        <span>已优惠¥0元</span>
       </div>
 
       <div class="div-d">
-        <a href>确认订单</a>
+        <button  @click="confirmOrder">确认订单</button>
       </div>
     </div>
   </div>
 </template>
 <script>
-export default {};
+import { areaList } from "@vant/area-data";
+import { getCartDelete } from "../util/axios";
+export default {
+  data() {
+    return {
+      areaList,
+      list: [],
+      cartlist: [],
+      totalPrice: "",
+    };
+  },
+  mounted() {
+    // 地址栏的获取
+    if (this.$route.query.id && this.$route.query.index) {
+      if (localStorage.getItem("addressEdit")) {
+        let contents = JSON.parse(localStorage.getItem("addressEdit"));
+        contents.forEach((item) => {
+          if ((item.id = this.$route.query.id)) {
+            item.address = item.addressDetail;
+          }
+        });
+        let addressSelectIndex = this.$route.query.index;
+        this.list.push(contents[addressSelectIndex]);
+      } else {
+        return;
+      }
+    }
+    // 商品信息的获取
+    if (localStorage.getItem("cartlistEdit")) {
+      this.cartlist = JSON.parse(localStorage.getItem("cartlistEdit"));
+      console.log(this.cartlist);
+    }
+    // 订单总价的获取
+    if (
+      localStorage.getItem("cartlistEdit") &&
+      localStorage.getItem("totalPrice")
+    ) {
+      this.totalPrice = JSON.parse(localStorage.getItem("totalPrice"));
+    }
+  },
+  methods: {
+    jump() {
+      this.$router.push("/addressList");
+    },
+    confirmOrder() {
+      if (this.list.length !== 0) {
+        this.cartlist.forEach((item,index)=>{
+          console.log(item,index)
+          console.log(item.id)
+          console.log(this.cartlist[index].id)
+          this.getCartDeletes(index)
+        })
+          this.$router.push({path:'/shop'})
+      } else {
+        this.$toast("请选择地址后再次确认订单信息");
+      }
+    },
+    // 删除
+    getCartDeletes(index) {
+      getCartDelete({
+        id: this.cartlist[index].id,
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -222,5 +271,14 @@ html {
 .fix .text2 img {
   width: 100%;
   height: 100%;
+}
+.van-address-item__edit {
+  display: none;
+}
+.van-address-list__bottom {
+  display: none;
+}
+.goods-one{
+  margin-bottom:20px
 }
 </style>

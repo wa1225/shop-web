@@ -1,3 +1,4 @@
+<!-- 我是首页 -->
 <template>
   <div>
     <!-- top栏和导航栏 -->
@@ -14,7 +15,7 @@
         </div>
         <div class="search">
           <span class="iconfont">&#xe50b;</span>
-          <input type="text" placeholder="按内容搜索" />
+          <input type="text" placeholder="按内容搜索" @click="searchClick()" />
         </div>
         <div class="bus">
           <span class="iconfont">&#xe651;</span>
@@ -26,23 +27,7 @@
             <a href="#">推荐</a>
           </li>
           <li v-for="item in cate" :key="item.id">
-            <a href="#">{{item.catename}}</a>
-          </li>
-          <!-- <li>
-            <a href="#">鞋包</a>
-          </li>
-          <li>
-            <a href="#">居家</a>
-          </li>
-          <li>
-            <a href="#">母婴</a>
-          </li>
-          <li>
-            <a href="#">美妆</a>
-          </li>-->
-          <li>
-            <span class="iconfont">&#xe6a3;</span>
-            <a href="#">分类</a>
+            <a href="#">{{ item.catename }}</a>
           </li>
         </ul>
       </div>
@@ -147,8 +132,13 @@
     <div class="daohang">
       <div class="daohang_content">
         <ul>
-          <li v-for="(item,index) in nav" :key="item.id" @click="btn(index)" :class="[index==num?'active':'']">
-           {{item.name}}
+          <li
+            v-for="(item, index) in nav"
+            :key="item.id"
+            @click="btn(index)"
+            :class="[index == num ? 'active' : '']"
+          >
+            {{ item.name }}
           </li>
           <!-- <li>
             <a href="#">新品上市</a>
@@ -163,16 +153,26 @@
       </div>
     </div>
     <!-- 列表页 -->
-    <div class="commodity"   v-for="(item,idex) in goods" :key="idex" v-show="num == idex">
-      <div class="commodity_content" v-for="list in item.content" :key="list.id">
+    <div
+      class="commodity"
+      v-for="(item, idex) in goods"
+      :key="idex"
+      v-show="num == idex"
+    >
+      <div
+        class="commodity_content"
+        v-for="list in item.content"
+        :key="list.id"
+        @click="deil(list.id)"
+      >
         <div class="com_left">
           <img :src="list.img" alt />
         </div>
         <div class="com_right">
-          <div class="txt1">{{list.goodsname}}</div>
+          <div class="txt1">{{ list.goodsname }}</div>
           <div class="txt2">
             ¥
-            <span>{{list.price}}</span>
+            <span>{{ list.price }}</span>
           </div>
           <div class="txt3">已售999件</div>
           <div class="txt4">立即抢购</div>
@@ -180,7 +180,7 @@
       </div>
     </div>
     <!-- 列表页2 -->
-      <!-- <div class="commodity">
+    <!-- <div class="commodity">
       <div class="commodity_content" v-for="item in newlist" :key="item.id">
         <div class="com_left">
           <img :src="item.img" alt />
@@ -198,7 +198,7 @@
     </div> -->
 
     <!-- 列表三 -->
-     <!-- <div class="commodity">
+    <!-- <div class="commodity">
       <div class="commodity_content" v-for="item in hotlist" :key="item.id">
         <div class="com_left">
           <img :src="item.img" alt />
@@ -220,33 +220,33 @@
 <script>
 // import Swiper from 'swiper'
 // import vtitle from "./components/title.vue";
-import { getBanner, getCate, getCkill,getGoods} from "../util/axios";
+import { getBanner, getCate, getCkill, getGoods } from "../util/axios";
 
 export default {
   data() {
     return {
-      nav:[
+      nav: [
         {
-          id:1,
-          name:'热卖商品'
+          id: 1,
+          name: "热卖商品",
         },
         {
-          id:2,
-          name:'新品上市'
+          id: 2,
+          name: "新品上市",
         },
         {
-          id:3,
-          name:'所有商品'
-        }
+          id: 3,
+          name: "所有商品",
+        },
       ],
       bannerlist: [],
       cate: [],
-      ms:[],
-      goods:[],
-      hotlist:[],
-      newlist:[],
-      shoplist:[],
-      num:0,
+      ms: [],
+      goods: [],
+      hotlist: [],
+      newlist: [],
+      shoplist: [],
+      num: 0,
       // shoplist: [
       //   {
       //     id: "1",
@@ -288,42 +288,53 @@ export default {
     this.getCate();
     this.getCkill();
     this.getGoods();
-    getBanner().then(res => {
+    getBanner().then((res) => {
       if (res.code == 200) {
         this.bannerlist = res.list;
       }
     });
   },
   methods: {
-    btn(id){
-      this.num = id
-      console.log(this.num)
-      console.log(this.shoplist)
-      console.log(this.goods)
+    btn(id) {
+      this.num = id;
+      console.log(this.num);
+      console.log(this.shoplist);
+      console.log(this.goods);
     },
     //获取首页分类
     async getCate() {
       // console.log(res.list)
       this.cate = await getCate({});
-      // console.log(this.cate);
+      console.log(this.cate);
     },
     //获取秒杀活动
-     async getCkill() {
+    async getCkill() {
       // console.log(res.list)
       this.ms = await getCkill({});
       console.log(this.ms);
     },
     //获取商品信息
-     async getGoods() {
+    async getGoods() {
       // console.log(res.list)
       this.goods = await getGoods({});
       // this.newlist = this.goods[1].content
-      this.shoplist = this.goods[this.num].content
+      this.shoplist = this.goods[this.num].content;
       // this.hotlist = this.goods[0].content
       console.log(this.goods);
     },
-
-  }
+    // 跳转搜索页面
+    searchClick() {
+      this.$router.push("/search");
+    },
+    deil(id) {
+      this.$router.push({
+        path: "/detail",
+        query: {
+          id,
+        },
+      });
+    },
+  },
   // updated() {
   //   new Swiper('.swiper-container',{
   //     loop:true,
@@ -337,9 +348,9 @@ export default {
   //   });
 
   // },
+  //
 };
 </script>
 <style src="../assets/css/index.css" scoped>
-
 /* @import "../assets/css/index.css"; */
 </style>

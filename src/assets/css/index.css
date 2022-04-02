@@ -70,12 +70,18 @@
 .wrap .nav_bottom {
   width: 7.5rem;
   height: 0.8rem;
+  overflow-x: scroll;
 }
 .wrap .nav_bottom ul {
-  width: 7.5rem;
+  width: 15.5rem;
   height: 0.8rem;
   display: flex;
   justify-content: space-around;
+}
+.wrap .nav_bottom ul li {
+  width: 3rem;
+  height: 0.8rem;
+  text-align: center;
 }
 .wrap .nav_bottom ul li span {
   color: #FFF3F2;
@@ -420,3 +426,4 @@
 .active {
   background-color: #f26b11;
 }
+/*# sourceMappingURL=./index.css.map */

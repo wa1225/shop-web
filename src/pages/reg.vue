@@ -1,44 +1,55 @@
+<!-- 注册页面 -->
 <template>
   <div>
-    <van-nav-bar title="用户注册" left-arrow 
-    right-text="登录"
+    <van-nav-bar
+      title="小U商城用户注册"
+      left-arrow
+      right-text="登录"
       @click-right="$router.push('/login')"
+      @click-left="$router.push('/login')"
     />
     <!-- 表单项 -->
     <div class="wrap">
-        <img src="../assets/images/orange.png" alt="">
-    <van-form @submit="register">
-      <van-field
-        v-model="regList.phone"
-        name="手机号"
-        label="手机号"
-        placeholder="手机号"
-        :rules="[{ required: true, validator, message: '请填写手机号' }]"
-      />
-      <van-field
-        v-model="regList.nickname"
-        name="昵称"
-        label="昵称"
-        placeholder="昵称"
-        :rules="[{ required: true, message: '请填写昵称' }]"
-      />
-      <van-field
-        v-model="regList.password"
-        type="password"
-        name="密码"
-        label="密码"
-        placeholder="密码"
-        :rules="[{ required: true, message: '请填写密码' }]"
-      />
-      <div style="margin: 16px;">
-        <van-button round block type="info" native-type="submit">注册</van-button>
-      </div>
-    </van-form>
+      <!-- <img src="../assets/images/orange.png" alt=""> -->
+      <van-form @submit="register">
+        <van-field
+          v-model="regList.nickname"
+          name="昵称"
+          label="昵称"
+          placeholder="昵称"
+          :rules="[{ required: true, message: '请填写昵称' }]"
+        />
+        <van-field
+          v-model="regList.phone"
+          name="手机号"
+          label="手机号"
+          placeholder="手机号"
+          :rules="[{ required: true, validator, message: '请填写手机号' }]"
+        />
+        <van-field
+          v-model="regList.password"
+          type="password"
+          name="密码"
+          label="密码"
+          placeholder="密码"
+          :rules="[{ required: true, message: '请填写密码' }]"
+        />
+        <div style="margin: 16px" class="login">
+          <van-button
+            round
+            block
+            type="info"
+            native-type="submit"
+            class="login_button"
+            >注册</van-button
+          >
+        </div>
+      </van-form>
     </div>
   </div>
 </template>
 <script>
-import {Reg} from '../util/axios'
+import { Reg } from "../util/axios";
 import { Toast } from "vant";
 export default {
   data() {
@@ -46,8 +57,8 @@ export default {
       regList: {
         phone: "", //手机号
         nickname: "", //昵称
-        password: "" //密码
-      }
+        password: "", //密码
+      },
     };
   },
   methods: {
@@ -55,22 +66,20 @@ export default {
     validator(val) {
       return /1\d{10}/.test(val);
     },
-    register(){
-        Reg(this.regList).then(res=>{
-            if(res.code==200){
-                Toast.success(res.msg);
-                this.$router.push("/login");
-            }else{
-                Toast.fail(res.msg);
-            }
-        })
-
-    }
-  }
+    register() {
+      Reg(this.regList).then((res) => {
+        if (res.code == 200) {
+          Toast.success(res.msg);
+          this.$router.push("/login");
+        } else {
+          Toast.fail(res.msg);
+        }
+      });
+    },
+  },
 };
 </script>
 <style scoped>
-
 .van-nav-bar {
   background: #ff6040;
   opacity: 0.8;
@@ -78,28 +87,43 @@ export default {
   font-size: 0.34rem;
   color: #ffffff;
 }
-.van-button{
-    background: #FF6040;
-    outline: none;
-    border: 0;
-    width: 6rem;
-    height: 1rem;
-    border-radius: 0;
-    margin: 0 auto;
-    
+.van-button {
+  background: #ff6040;
+  outline: none;
+  border: 0;
+  width: 6rem;
+  height: 1rem;
+  border-radius: 0;
+  margin: 0 auto;
 }
 .wrap {
   width: 7.1rem;
   height: 13.4rem;
   background-color: #ffffff;
   margin: 0 auto;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
   overflow: hidden;
+  background-image:none;
 }
-img{
-    width: 3.6rem;
-    height: .9rem;
-    margin: 0 auto;
-    margin-top: 3.8rem;
+.wrap .login{
+  width:unset;
+  height:unset;
+}
+img {
+  width: 3.6rem;
+  height: 0.9rem;
+  margin: 0 auto;
+  margin-top: 3.8rem;
+}
+.login .login_button {
+  text-align: center;
+  font-size: 18px;
+  border-radius:6pc;
+}
+.van-cell {
+  font-size: 16px;
+}
+.van-nav-bar__content .van-nav-bar__title {
+  font-size: 17px;
 }
 </style>

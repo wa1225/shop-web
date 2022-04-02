@@ -30,6 +30,13 @@
 
 
 
+.van-radio__icon--round .van-icon-success{
+    display: none;
+}
+.van-address-list{
+    margin-top:-16px
+}
+
 
 
 

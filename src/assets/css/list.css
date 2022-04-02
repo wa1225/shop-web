@@ -3,8 +3,10 @@
   height: 0.88rem;
   background-color: #FF6040;
   margin: 0 auto;
+  position: relative;
 }
-.top h3 {
+.top span {
+  display: inline-block;
   opacity: 0.8;
   font-family: Helvetica;
   font-size: 0.34rem;
@@ -12,6 +14,13 @@
   letter-spacing: 0;
   text-align: center;
   line-height: 0.88rem;
+  width: 50%;
+  margin-left: 25%;
+}
+.top button {
+  position: absolute;
+  left: 0.2rem;
+  top: 0.25rem;
 }
 .search_cation {
   width: 7.5rem;
@@ -158,3 +167,4 @@
   color: #999;
   margin-right: 0.1rem;
 }
+/*# sourceMappingURL=./list.css.map */

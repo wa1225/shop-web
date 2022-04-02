@@ -13,7 +13,6 @@
     </div>
     <div class="title">
       <div class="left">
-        <input value="Item 1" type="checkbox" />
         <p>小U自营</p>
       </div>
       <div class="right">
@@ -23,7 +22,7 @@
       </div>
     </div>
     <div class="list" v-if="cartlist.length > 0">
-      <van-swipe-cell  v-for="(item,index) in cartlist" :key="item.id">
+      <van-swipe-cell v-for="(item, index) in cartlist" :key="item.id">
         <van-card
           :num="item.num"
           :price="item.price"
@@ -31,14 +30,28 @@
           :title="item.goodsname"
           class="goods-card"
           :thumb="item.img"
-          
         >
-          <template #footer>
-            <van-stepper v-model="item.num" min="1" max="8" @plus='plus(index)' @minus='minus(index)'/>
+          <template #tag>
+            <input v-model="item.select" value="item.select" type="checkbox" />
           </template>
-         </van-card>
+          <template #footer>
+            <van-stepper
+              v-model="item.num"
+              min="1"
+              max="8"
+              @plus="plus(index)"
+              @minus="minus(index)"
+            />
+          </template>
+        </van-card>
         <template #right>
-          <van-button square text="删除" type="danger" class="delete-button" @click="getCartDelete(index)" />
+          <van-button
+            square
+            text="删除"
+            type="danger"
+            class="delete-button"
+            @click="getCartDelete(index)"
+          />
         </template>
       </van-swipe-cell>
       <!-- <ul>
@@ -106,7 +119,7 @@
     </div>
     <div class="foot">
       <div class="left">
-        <input value="Item 1" type="checkbox" />
+        <input v-model="SelectedAll" type="checkbox" />
         <p>全选</p>
       </div>
       <p class="p1">
@@ -114,10 +127,10 @@
         <i>已免运费</i>
       </p>
       <p class="p2">
-        <span>￥1998</span>
-        <i>已优惠￥200元</i>
+        <span>{{ getTotal.totalPrice }}</span>
+        <i>已优惠￥0元</i>
       </p>
-      <button @click="$router.push('/order')">结算</button>
+      <button @click="order()">结算</button>
     </div>
   </div>
 </template>
@@ -128,38 +141,88 @@ export default {
   data() {
     return {
       cartlist: [],
+      checked: false,
+      totalPrice:""
     };
   },
   mounted() {
     this.getCartList();
   },
+  computed: {
+    getTotal() {
+      let proList = this.cartlist.filter((item) => {
+        return item.select;
+      });
+      let totalPrice = 0;
+      for (var i = 0; i < proList.length; i++) {
+        // 总价累加
+        totalPrice += proList[i].num * proList[i].price;
+      }
+      this.totalPrice = totalPrice
+      return { totalPrice: totalPrice };
+    },
+    // 检测是否全选
+    SelectedAll: {
+      get() {
+        if (this.cartlist.length !== 0) {
+          return this.cartlist.every((item) => item.select);
+        }
+      },
+      set(x) {
+        this.cartlist.forEach((item) => (item.select = x));
+      },
+    },
+  },
   methods: {
-      async plus(index) {
-       await getCartEdit({
-        id:this.cartlist[index].id,
-        type:2
-      });
-       this.getCartList();
-    },
-    
-      async minus(index) {
+    // 数量增加
+    async plus(index) {
       await getCartEdit({
-        id:this.cartlist[index].id,
-        type:1
-      });
-       this.getCartList();
-    },
-    
-    async getCartList() {
-      this.cartlist = await getCartList({
-        uid: JSON.parse(sessionStorage.getItem("user")).uid
-      });
-    },
-    async getCartDelete(index) {
-      await getCartDelete({
-        id: this.cartlist[index].id
+        id: this.cartlist[index].id,
+        type: 2,
       });
       this.getCartList();
+    },
+    // 数量减少
+    async minus(index) {
+      await getCartEdit({
+        id: this.cartlist[index].id,
+        type: 1,
+      });
+      this.getCartList();
+    },
+    // 获取列表
+    async getCartList() {
+      this.cartlist = await getCartList({
+        uid: JSON.parse(sessionStorage.getItem("user")).uid,
+      });
+      console.log(this.cartlist);
+      var that = this;
+      this.cartlist.map((item) => {
+        that.$set(item, "select", false);
+      });
+    },
+    // 删除
+    async getCartDelete(index) {
+      await getCartDelete({
+        id: this.cartlist[index].id,
+      });
+      this.getCartList();
+    },
+    // 结算按钮
+    order(){
+      let contents = this.cartlist.filter(item=>{
+        return item.select
+      })
+      console.log(contents,this.totalPrice)
+      localStorage.setItem('cartlistEdit',JSON.stringify(contents))
+      localStorage.setItem('totalPrice',JSON.stringify(this.totalPrice))
+      console.log(localStorage.getItem('cartlistEdit'))
+      console.log(localStorage.getItem('totalPrice'))
+      if(contents.length !== 0){
+        this.$router.push('/order')
+      }else{
+        this.$toast('请选择商品后再进行结算')
+      }
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -168,7 +231,7 @@ export default {
     } else {
       Dialog.confirm({
         title: "未登录",
-        message: "请登录后再进购物车"
+        message: "请登录后再进购物车",
       })
         .then(() => {
           next("/login");
@@ -177,7 +240,7 @@ export default {
           // on cancel
         });
     }
-  }
+  },
 };
 </script>
 

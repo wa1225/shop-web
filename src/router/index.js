@@ -62,6 +62,30 @@ const routes = [
     component:()=>import('../pages/reg')
   },
   {
+    path: '/search',
+    component:()=>import('../pages/search')
+  },
+  {
+    path: '/first_show',
+    component:()=>import('../pages/first_show')
+  },
+  {
+    path: '/addressList',
+    component:()=>import('../pages/addressList.vue')
+  },
+  {
+    path: '/addressEdit',
+    component:()=>import('../pages/addressEdit.vue')
+  },
+  {
+    path: '/addressModify',
+    component:()=>import('../pages/addressModify.vue')
+  },
+  {
+    path: '/orderSuccess',
+    component:()=>import('../pages/orderSuccess.vue')
+  },
+  {
     path:'*',
     redirect:'/index'
   }
@@ -79,9 +103,12 @@ const routes = [
   //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // }
 ]
-
 const router = new VueRouter({
-  routes
+  mode:'history',
+  routes,
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  },
 })
 
 export default router
